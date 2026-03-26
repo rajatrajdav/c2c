@@ -2,66 +2,64 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Importing Firebase Authentication functions and our configuration
+// Firebase imports (Ensure firebase.js is correctly set up in src folder)
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../firebase";
 
-// Importing the background video (Ensure the path is correct)
+// Background Video (Path check kar lena apne assets folder ke hisab se)
 import bgVideo from "../assets/bg-video.mp4";
 
 export default function Login() {
-  // State to manage the active portal role
   const [role, setRole] = useState("student");
   const navigate = useNavigate();
 
-  // Simplified state: Only Email and Password are required for manual login
+  // State for Form Data
   const [formData, setFormData] = useState({
-    email: "",
+    identifier: "", // Student ke liye Enrollment No, Industry ke liye Email
     password: ""
   });
 
-  // Handle input changes dynamically
+  // Handle Input Changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle the manual login button click
-  const handleLogin = () => {
+  // Manual Login Logic
+  const handleLogin = (e) => {
+    e.preventDefault();
     if (role === "student") {
-      console.log("Student Login successful for Email:", formData.email);
+      console.log("Student logging in with Enrollment No:", formData.identifier);
       navigate("/student");
     } else {
-      console.log("Industry Login successful for Official Email:", formData.email);
+      console.log("Industry logging in with User Id:", formData.identifier);
       navigate("/industry");
     }
   };
 
-  // Handle actual Google OAuth trigger for login
-  const handleGoogleLogin = async () => {
+  // Google OAuth Login Logic
+  const handleGoogleLogin = async (e) => {
+    e.preventDefault();
     try {
-      // This triggers the actual Google Sign-in popup window
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      console.log("Google Login Successful:", user.displayName);
       
-      console.log("Google Sign-In Successful!");
-      console.log("User Data:", user.displayName, user.email);
-
-      // Redirect user to their respective dashboard after successful login
+      // Role based redirection
       if (role === "student") {
         navigate("/student");
       } else {
         navigate("/industry");
       }
     } catch (error) {
-      console.error("Error during Google Sign-In:", error.message);
+      console.error("Login Error:", error.message);
+      alert("Google Login Failed. Please try again.");
     }
   };
 
   return (
-    // Main wrapper container
-    <div className="relative min-h-screen flex items-center justify-center p-4 py-10">
+    <div className="relative min-h-screen flex items-center justify-center p-4 py-10 overflow-hidden">
       
-      {/* Background Video Section */}
+      {/* Background Video */}
       <video
         autoPlay
         loop
@@ -72,13 +70,13 @@ export default function Login() {
         <source src={bgVideo} type="video/mp4" />
       </video>
 
-      {/* Dark overlay for better text readability */}
+      {/* Dark Overlay */}
       <div className="fixed top-0 left-0 w-full h-full bg-black/50 z-10"></div>
 
-      {/* Main Form Container - True Glassmorphism Effect */}
+      {/* Login Card */}
       <div className="relative z-20 flex w-full max-w-5xl bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden min-h-[600px] border border-white/20">
         
-        {/* Left Side: Transparent Glass with Glowing Animated Orbs */}
+        {/* Left Side: Animated Graphics */}
         <div className="hidden lg:flex w-1/2 bg-black/30 relative items-center justify-center overflow-hidden">
           <motion.div
             animate={{ y: [0, -40, 0], scale: [1, 1.2, 1] }}
@@ -92,39 +90,38 @@ export default function Login() {
           />
 
           <div className="relative z-10 text-white text-center p-8">
-            <h1 className="text-4xl font-extrabold mb-4 drop-shadow-md">Welcome Back!</h1>
+            <h1 className="text-4xl font-extrabold mb-4 drop-shadow-md underline decoration-indigo-500">C2C PORTAL</h1>
             <p className="text-gray-200 font-medium drop-shadow-md">
-              Access the portal to manage your academic or industry profile seamlessly.
+              Connecting Campus directly to the Corporate world.
             </p>
           </div>
         </div>
 
-        {/* Right Side: Solid Form Section */}
-        <div className="w-full lg:w-1/2 p-8 sm:p-12 flex flex-col justify-center relative bg-white/95 overflow-y-auto custom-scrollbar">
+        {/* Right Side: Form Section */}
+        <div className="w-full lg:w-1/2 p-8 sm:p-12 flex flex-col justify-center relative bg-white/95">
           
-          <div className="text-center mb-8 flex-shrink-0">
+          <div className="text-center mb-8">
             <h2 className="text-3xl font-extrabold text-gray-800">
               {role === "student" ? "Student Portal" : "Industry Portal"}
             </h2>
-            <p className="text-gray-500 mt-2 text-sm font-medium">Please login to your account</p>
+            <p className="text-gray-500 mt-2 text-sm font-medium">Please login to continue</p>
           </div>
 
           {/* Role Selection Tabs */}
-          <div className="flex bg-gray-100 p-1 rounded-xl mb-6 relative shadow-inner border border-gray-200 flex-shrink-0">
+          <div className="flex bg-gray-100 p-1 rounded-xl mb-6 relative shadow-inner border border-gray-200">
             <button
               onClick={() => setRole("student")}
-              className={`flex-1 py-3 text-sm font-bold rounded-lg z-10 transition-colors ${role === "student" ? "text-white" : "text-gray-600 hover:text-indigo-600"}`}
+              className={`flex-1 py-3 text-sm font-bold rounded-lg z-10 transition-colors ${role === "student" ? "text-white" : "text-gray-600"}`}
             >
               Student
             </button>
             <button
               onClick={() => setRole("industry")}
-              className={`flex-1 py-3 text-sm font-bold rounded-lg z-10 transition-colors ${role === "industry" ? "text-white" : "text-gray-600 hover:text-indigo-600"}`}
+              className={`flex-1 py-3 text-sm font-bold rounded-lg z-10 transition-colors ${role === "industry" ? "text-white" : "text-gray-600"}`}
             >
               Industry
             </button>
             <motion.div
-              layoutId="activeTab"
               className="absolute top-1 bottom-1 left-1 bg-indigo-600 rounded-lg shadow-md"
               initial={false}
               animate={{ x: role === "student" ? 0 : "100%", width: "calc(50% - 4px)" }}
@@ -132,10 +129,10 @@ export default function Login() {
             />
           </div>
 
-          {/* Actual Working Google Login Button */}
+          {/* Google Login Button */}
           <button
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 text-gray-700 font-semibold py-3 rounded-lg shadow-sm hover:bg-gray-50 hover:shadow-md transition-all mb-6 flex-shrink-0"
+            className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 text-gray-700 font-semibold py-3 rounded-lg shadow-sm hover:bg-gray-50 hover:shadow-md transition-all mb-6"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -146,71 +143,59 @@ export default function Login() {
             Continue with Google
           </button>
 
-          {/* Divider */}
-          <div className="flex items-center mb-6 flex-shrink-0">
+          <div className="flex items-center mb-6">
             <div className="flex-1 border-t border-gray-300"></div>
-            <span className="px-3 text-gray-500 text-sm font-medium">OR LOGIN WITH EMAIL</span>
+            <span className="px-3 text-gray-500 text-sm font-medium">OR</span>
             <div className="flex-1 border-t border-gray-300"></div>
           </div>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={role}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
-              className="flex-shrink-0"
-            >
-              {/* Dynamic Email Input based on selected role */}
-              <div className="relative mb-4">
-                <input 
-                  type="email" 
-                  id="loginEmail" 
-                  name="email" 
-                  placeholder=" " 
-                  value={formData.email} 
-                  onChange={handleChange} 
-                  className="block px-3 pb-2 pt-6 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent peer transition-all" 
-                />
-                <label 
-                  htmlFor="loginEmail" 
-                  className="absolute text-sm text-gray-500 duration-300 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-3 peer-focus:text-indigo-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 cursor-text"
-                >
-                  {role === "student" ? "Email Address" : "Official Company Email ID"}
-                </label>
-              </div>
+          <form onSubmit={handleLogin}>
+            {/* Dynamic Input: Enrollment No or Email */}
+            <div className="relative mb-4">
+              <input 
+                type="text" 
+                id="identifier" 
+                name="identifier" 
+                placeholder=" " 
+                required
+                value={formData.identifier} 
+                onChange={handleChange} 
+                className="block px-3 pb-2 pt-6 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent peer transition-all" 
+              />
+              <label 
+                htmlFor="identifier" 
+                className="absolute text-sm text-gray-500 duration-300 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-3 peer-focus:text-indigo-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 cursor-text"
+              >
+                {role === "student" ? "University Roll No / Enrollment No" : "User ID"}
+              </label>
+            </div>
 
-              {/* Universal Password Input */}
-              <div className="relative mb-6">
-                <input 
-                  type="password" 
-                  id="loginPassword" 
-                  name="password" 
-                  placeholder=" " 
-                  value={formData.password} 
-                  onChange={handleChange} 
-                  className="block px-3 pb-2 pt-6 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent peer transition-all" 
-                />
-                <label 
-                  htmlFor="loginPassword" 
-                  className="absolute text-sm text-gray-500 duration-300 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-3 peer-focus:text-indigo-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 cursor-text"
-                >
-                  Password
-                </label>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+            {/* Password Input */}
+            <div className="relative mb-6">
+              <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                placeholder=" " 
+                required
+                value={formData.password} 
+                onChange={handleChange} 
+                className="block px-3 pb-2 pt-6 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent peer transition-all" 
+              />
+              <label 
+                htmlFor="password" 
+                className="absolute text-sm text-gray-500 duration-300 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-3 peer-focus:text-indigo-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 cursor-text"
+              >
+                Password
+              </label>
+            </div>
 
-          <button onClick={handleLogin} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-lg shadow-md hover:shadow-indigo-500/40 active:scale-95 transition-all font-bold text-lg tracking-wide flex-shrink-0">
-            LOGIN
-          </button>
+            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-lg shadow-md hover:shadow-indigo-500/40 active:scale-95 transition-all font-bold text-lg tracking-wide">
+              LOGIN
+            </button>
+          </form>
 
-          <p className="text-center mt-4 text-sm font-semibold text-indigo-600 cursor-pointer hover:underline flex-shrink-0">
-            Forgot Password?
-          </p>
-
-          <p className="text-center mt-4 text-sm font-medium text-gray-600 flex-shrink-0">
+          <p className="text-center mt-6 text-sm font-medium text-gray-600">
             Don't have an account?{" "}
             <span 
               onClick={() => navigate("/register")}
@@ -219,7 +204,6 @@ export default function Login() {
               Register here
             </span>
           </p>
-
         </div>
       </div>
     </div>
