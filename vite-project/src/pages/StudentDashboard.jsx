@@ -1,3 +1,10 @@
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║         STUDENT DASHBOARD — NO BACKEND (Standalone Mock)        ║
+// ║  All data is local mock data. No API calls are made.            ║
+// ║  To connect backend later: see IndustryDashboard_WithBackend    ║
+// ║  and follow the same API_BASE + useEffect pattern.              ║
+// ╚══════════════════════════════════════════════════════════════════╝
+
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -44,7 +51,6 @@ const jobData = [
   { title: "Data Analyst", company: "Analytics Co.", companyId: 3, type: "Remote", location: "Mumbai", salary: "4–8 LPA", skills: "Python, SQL, Tableau", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop" },
 ];
 
-// Shared vacancy feed (simulating what industry posted)
 const sharedVacancyFeed = [
   {
     id: 101, ownerId: 999, ownerName: "Global Tech Corp", ownerLogo: "GT",
@@ -99,511 +105,360 @@ const typeStyle = {
 // ─── STYLES ──────────────────────────────────────────────────────────────────
 
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,wght@0,700;0,800;1,700&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --indigo: #4f46e5;
-  --indigo-light: #818cf8;
+  --ink: #111318;
+  --ink-2: #3d4250;
+  --ink-3: #6b7280;
+  --ink-4: #9ca3af;
+  --line: #e9eaec;
+  --line-soft: #f3f4f6;
+  --surface: #ffffff;
+  --bg: #f5f6f8;
+  --accent: #2563eb;
+  --accent-soft: #eff4ff;
+  --accent-mid: #93c5fd;
+  --green: #059669;
+  --green-soft: #ecfdf5;
+  --amber: #d97706;
+  --amber-soft: #fffbeb;
+  --rose: #e11d48;
   --violet: #7c3aed;
-  --emerald: #10b981;
-  --amber: #f59e0b;
-  --rose: #f43f5e;
-  --navy: #0f172a;
-  --slate: #1e293b;
-  --muted: #64748b;
-  --subtle: #94a3b8;
-  --border: rgba(148,163,184,0.18);
-  --border-strong: rgba(99,102,241,0.25);
-  --surface: rgba(255,255,255,0.72);
-  --surface-strong: rgba(255,255,255,0.92);
-  --grad: linear-gradient(135deg, #4f46e5, #7c3aed);
-  --grad-warm: linear-gradient(135deg, #f59e0b, #ef4444);
-  --grad-emerald: linear-gradient(135deg, #10b981, #059669);
-  --shadow-sm: 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
-  --shadow: 0 4px 16px rgba(79,70,229,0.1), 0 1px 4px rgba(15,23,42,0.06);
-  --shadow-lg: 0 12px 40px rgba(79,70,229,0.16), 0 2px 8px rgba(15,23,42,0.08);
-  --radius: 18px;
-  --radius-sm: 11px;
-  --radius-xs: 8px;
+  --violet-soft: #f5f3ff;
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r: 16px;
+  --r-lg: 20px;
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 4px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.06);
 }
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: #f1f5f9;
-  min-height: 100vh;
-  color: var(--slate);
-  -webkit-font-smoothing: antialiased;
-}
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
 
-::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(79,70,229,0.25); border-radius: 99px; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
 
-/* ── NOISE OVERLAY ── */
-.noise {
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  opacity: 0.025;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-}
-
-/* ── TOP NAV ── */
 .nav {
-  height: 62px;
-  background: var(--surface);
-  backdrop-filter: blur(24px);
-  border-bottom: 1px solid var(--border);
+  height: 56px; background: var(--surface);
+  border-bottom: 1px solid var(--line);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 1.75rem;
-  position: sticky; top: 0; z-index: 200;
-  box-shadow: 0 1px 12px rgba(15,23,42,0.06);
+  padding: 0 1.5rem; position: sticky; top: 0; z-index: 200;
+  box-shadow: var(--shadow-xs);
 }
-.brand {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.15rem; font-weight: 800; letter-spacing: -0.04em;
-  background: var(--grad);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.brand-sub { font-size: 0.65rem; font-weight: 600; color: var(--subtle); letter-spacing: 0.12em; text-transform: uppercase; }
+.brand { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 800; color: var(--accent); letter-spacing: -0.03em; }
+.brand-sub { font-size: 0.6rem; font-weight: 600; color: var(--ink-4); letter-spacing: 0.12em; text-transform: uppercase; line-height: 1; }
 .search-shell { position: relative; }
 .search-box {
-  width: 280px; padding: 0.52rem 1rem 0.52rem 2.4rem;
-  border: 1px solid var(--border-strong);
-  border-radius: 99px; background: var(--surface-strong);
-  font-family: 'DM Sans', sans-serif; font-size: 0.83rem; color: var(--slate); outline: none;
-  transition: 0.2s; box-shadow: var(--shadow-sm);
+  width: 260px; padding: 0.48rem 0.9rem 0.48rem 2.2rem;
+  border: 1px solid var(--line); border-radius: 99px;
+  background: var(--bg); font-family: inherit; font-size: 0.82rem; color: var(--ink);
+  outline: none; transition: 0.18s;
 }
-.search-box:focus { border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(79,70,229,0.12); }
-.search-box::placeholder { color: var(--subtle); }
-.search-ico { position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); color: var(--subtle); font-size: 0.8rem; pointer-events: none; }
+.search-box:focus { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.search-box::placeholder { color: var(--ink-4); }
+.search-ico { position: absolute; left: 0.72rem; top: 50%; transform: translateY(-50%); color: var(--ink-4); font-size: 0.75rem; pointer-events: none; }
 .search-drop {
-  position: absolute; top: calc(100% + 8px); left: 0; width: 100%;
-  background: var(--surface-strong); backdrop-filter: blur(20px);
-  border: 1px solid var(--border-strong); border-radius: var(--radius);
-  overflow: hidden; box-shadow: var(--shadow-lg); z-index: 300;
+  position: absolute; top: calc(100% + 6px); left: 0; width: 100%;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow-lg); z-index: 300;
 }
-.search-row { display: flex; align-items: center; gap: 0.7rem; padding: 0.65rem 1rem; cursor: pointer; transition: background 0.15s; }
-.search-row:hover { background: rgba(79,70,229,0.06); }
-.search-row-name { font-size: 0.83rem; font-weight: 600; color: var(--slate); }
-.search-row-meta { font-size: 0.7rem; color: var(--muted); }
-
-.nav-right { display: flex; align-items: center; gap: 0.7rem; }
+.search-row { display: flex; align-items: center; gap: 0.65rem; padding: 0.6rem 0.9rem; cursor: pointer; transition: background 0.12s; }
+.search-row:hover { background: var(--bg); }
+.search-row-name { font-size: 0.82rem; font-weight: 600; }
+.search-row-meta { font-size: 0.7rem; color: var(--ink-3); }
+.nav-right { display: flex; align-items: center; gap: 0.55rem; }
 .nav-pill {
-  padding: 0.38rem 1rem; border-radius: 99px;
-  background: var(--surface-strong); border: 1px solid var(--border-strong);
-  font-size: 0.75rem; font-weight: 700; color: var(--muted); cursor: pointer;
-  transition: 0.18s;
+  padding: 0.35rem 0.9rem; border-radius: 99px;
+  background: transparent; border: 1px solid var(--line);
+  font-size: 0.75rem; font-weight: 600; color: var(--ink-3); cursor: pointer;
+  transition: 0.15s; font-family: inherit; white-space: nowrap;
 }
-.nav-pill:hover { background: rgba(79,70,229,0.08); color: var(--indigo); }
-.nav-pill.active { background: var(--grad); color: white; border-color: transparent; box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
+.nav-pill:hover { background: var(--bg); color: var(--ink-2); border-color: var(--ink-4); }
+.nav-pill.active { background: var(--accent); color: white; border-color: transparent; box-shadow: 0 2px 8px rgba(37,99,235,0.25); }
 .nav-avatar {
-  width: 36px; height: 36px; border-radius: 10px;
-  background: var(--grad); color: white;
-  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.9rem;
+  width: 34px; height: 34px; border-radius: var(--r-xs);
+  background: var(--accent); color: white;
+  font-family: 'Fraunces', serif; font-weight: 800; font-size: 0.88rem;
   display: flex; align-items: center; justify-content: center; cursor: pointer;
-  box-shadow: 0 3px 12px rgba(79,70,229,0.3);
-  transition: transform 0.15s, box-shadow 0.15s; overflow: hidden;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.28); transition: transform 0.15s; overflow: hidden;
 }
-.nav-avatar:hover { transform: scale(1.08); }
+.nav-avatar:hover { transform: scale(1.06); }
 .notif-btn {
-  width: 36px; height: 36px; border-radius: 10px;
-  background: var(--surface-strong); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center; cursor: pointer;
-  font-size: 0.9rem; position: relative; transition: 0.18s;
+  width: 34px; height: 34px; border-radius: var(--r-xs);
+  background: var(--surface); border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 0.85rem; position: relative; transition: 0.15s;
 }
-.notif-btn:hover { background: rgba(79,70,229,0.08); }
-.notif-dot {
-  position: absolute; top: 6px; right: 6px;
-  width: 7px; height: 7px; background: var(--rose); border-radius: 50%;
-  border: 1.5px solid white;
-}
+.notif-btn:hover { background: var(--bg); }
+.notif-dot { position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; background: var(--rose); border-radius: 50%; border: 1.5px solid white; }
 
-/* ── LAYOUT ── */
-.layout { display: flex; min-height: calc(100vh - 62px); position: relative; z-index: 1; }
+.layout { display: flex; min-height: calc(100vh - 56px); }
 
-/* ── SIDEBAR ── */
 .sidebar-panel {
-  width: 340px; min-width: 340px;
-  background: var(--surface); backdrop-filter: blur(24px);
-  border-right: 1px solid var(--border);
-  height: calc(100vh - 62px); position: sticky; top: 62px;
+  width: 300px; min-width: 300px;
+  background: var(--surface); border-right: 1px solid var(--line);
+  height: calc(100vh - 56px); position: sticky; top: 56px;
   overflow-y: auto; flex-shrink: 0;
 }
-.sidebar-panel.right { border-right: none; border-left: 1px solid var(--border); }
+.sidebar-panel.right { border-right: none; border-left: 1px solid var(--line); }
 
-/* ── PANEL TOP ── */
 .panel-top {
-  padding: 1.5rem;
-  background: var(--grad); position: relative; overflow: hidden;
+  padding: 1.25rem 1.25rem 1rem;
+  background: var(--accent); position: relative; overflow: hidden;
 }
-.panel-top::before {
-  content: ''; position: absolute; top: -50px; right: -50px;
-  width: 160px; height: 160px; background: rgba(255,255,255,0.07); border-radius: 50%;
+.panel-top::after {
+  content: ''; position: absolute;
+  width: 120px; height: 120px; border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  bottom: -40px; right: -30px;
 }
 .panel-av {
-  width: 48px; height: 48px; border-radius: 13px;
-  background: rgba(255,255,255,0.18); border: 2px solid rgba(255,255,255,0.28);
-  color: white; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem;
+  width: 44px; height: 44px; border-radius: 11px;
+  background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.25);
+  color: white; font-family: 'Fraunces', serif; font-weight: 800; font-size: 1.1rem;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.panel-uname { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: white; line-height: 1.2; }
-.panel-handle { font-size: 0.7rem; color: rgba(255,255,255,0.55); margin-top: 2px; }
+.panel-uname { font-family: 'Fraunces', serif; font-size: 0.95rem; font-weight: 800; color: white; line-height: 1.25; }
+.panel-handle { font-size: 0.68rem; color: rgba(255,255,255,0.5); margin-top: 1px; }
 .panel-qual-badge {
-  display: inline-flex; align-items: center; margin-top: 0.7rem;
-  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 99px; padding: 0.22rem 0.7rem;
-  font-size: 0.7rem; color: rgba(255,255,255,0.85); font-weight: 600; letter-spacing: 0.04em;
+  display: inline-flex; align-items: center; margin-top: 0.6rem;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 99px; padding: 0.18rem 0.65rem;
+  font-size: 0.68rem; color: rgba(255,255,255,0.85); font-weight: 600;
   position: relative; z-index: 1;
 }
 .edit-btn {
-  padding: 0.3rem 0.8rem; border-radius: 9px;
-  border: 1.5px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.9); font-size: 0.74rem; font-weight: 600; cursor: pointer;
-  transition: 0.2s; flex-shrink: 0; font-family: 'DM Sans', sans-serif;
+  padding: 0.28rem 0.75rem; border-radius: var(--r-xs);
+  border: 1.5px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.88); font-size: 0.72rem; font-weight: 600;
+  cursor: pointer; transition: 0.18s; flex-shrink: 0; font-family: inherit;
 }
-.edit-btn:hover { background: rgba(255,255,255,0.22); }
+.edit-btn:hover { background: rgba(255,255,255,0.2); }
 .close-x {
-  padding: 0.28rem 0.72rem; border-radius: 9px;
-  border: 1.5px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.8); font-size: 0.72rem; cursor: pointer;
-  font-family: 'DM Sans', sans-serif; transition: 0.2s;
+  padding: 0.26rem 0.68rem; border-radius: var(--r-xs);
+  border: 1.5px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.78); font-size: 0.7rem; cursor: pointer;
+  font-family: inherit; transition: 0.18s;
 }
-.close-x:hover { background: rgba(220,38,38,0.4); }
+.close-x:hover { background: rgba(220,38,38,0.38); }
 
-/* ── FORM SECTIONS ── */
-.form-section {
-  padding: 1rem 1.4rem;
-  border-bottom: 1px solid rgba(255,255,255,0.4);
-}
-.form-section-title {
-  font-size: 0.67rem; font-weight: 700; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--indigo); opacity: 0.7; margin-bottom: 0.65rem;
-}
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-.form-field { display: flex; flex-direction: column; gap: 0.25rem; }
-.form-label { font-size: 0.68rem; font-weight: 600; color: var(--muted); }
+.form-section { padding: 0.9rem 1.1rem; border-bottom: 1px solid var(--line-soft); }
+.form-section-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.6rem; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.45rem; }
+.form-field { display: flex; flex-direction: column; gap: 0.2rem; }
+.form-label { font-size: 0.67rem; font-weight: 600; color: var(--ink-3); }
 .form-input {
-  padding: 0.5rem 0.85rem; border-radius: var(--radius-sm);
-  border: 1px solid var(--border-strong); background: rgba(255,255,255,0.6);
-  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: var(--slate); outline: none;
-  transition: 0.2s;
+  padding: 0.46rem 0.8rem; border-radius: var(--r-sm);
+  border: 1px solid var(--line); background: var(--bg);
+  font-family: inherit; font-size: 0.8rem; color: var(--ink); outline: none; transition: 0.18s;
 }
-.form-input:focus { border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); background: rgba(255,255,255,0.9); }
-.form-input::placeholder { color: var(--subtle); }
-
+.form-input:focus { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
+.form-input::placeholder { color: var(--ink-4); }
 .upload-btn {
   display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%;
-  padding: 0.6rem; border-radius: var(--radius-sm);
-  border: 1.5px dashed rgba(79,70,229,0.3); background: rgba(79,70,229,0.03);
-  color: var(--muted); font-size: 0.8rem; font-weight: 500; cursor: pointer;
-  transition: 0.2s; font-family: 'DM Sans', sans-serif;
+  padding: 0.55rem; border-radius: var(--r-sm);
+  border: 1.5px dashed var(--line); background: var(--bg);
+  color: var(--ink-3); font-size: 0.78rem; font-weight: 500; cursor: pointer;
+  transition: 0.18s; font-family: inherit;
 }
-.upload-btn:hover { border-color: var(--indigo); color: var(--indigo); background: rgba(79,70,229,0.06); }
+.upload-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
 
-/* ── KNOW MORE ── */
-.knowmore-section { padding: 1rem 1.4rem; border-bottom: 1px solid rgba(255,255,255,0.4); }
-.knowmore-btn {
-  display: flex; align-items: center; gap: 0.4rem;
-  background: none; border: none; font-family: 'DM Sans', sans-serif;
-  font-size: 0.82rem; font-weight: 600; color: var(--indigo); cursor: pointer; transition: 0.2s;
-}
+.knowmore-section { padding: 0.9rem 1.1rem; border-bottom: 1px solid var(--line-soft); }
+.knowmore-btn { display: flex; align-items: center; gap: 0.4rem; background: none; border: none; font-family: inherit; font-size: 0.8rem; font-weight: 600; color: var(--accent); cursor: pointer; transition: 0.15s; }
 .knowmore-btn:hover { opacity: 0.65; }
-.details-box {
-  margin-top: 0.75rem; background: rgba(255,255,255,0.6);
-  border: 1px solid var(--border-strong); border-radius: var(--radius-sm); overflow: hidden;
-}
-.details-row {
-  display: flex; align-items: center; gap: 0.6rem;
-  padding: 0.55rem 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.5);
-  font-size: 0.8rem; color: var(--slate); font-weight: 500;
-}
+.details-box { margin-top: 0.65rem; background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden; }
+.details-row { display: flex; align-items: center; gap: 0.55rem; padding: 0.5rem 0.85rem; border-bottom: 1px solid var(--line-soft); font-size: 0.78rem; color: var(--ink-2); font-weight: 500; }
 .details-row:last-child { border-bottom: none; }
-.details-section-head {
-  padding: 0.4rem 0.9rem; background: rgba(79,70,229,0.06);
-  font-size: 0.66rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.08em; color: var(--indigo);
-  border-bottom: 1px solid rgba(255,255,255,0.5);
-}
+.details-section-head { padding: 0.35rem 0.85rem; background: var(--accent-soft); font-size: 0.63rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); border-bottom: 1px solid var(--line-soft); }
 
-/* ── FEEDS ── */
-.feed-section { padding: 1rem 1.4rem; }
-.feed-title {
-  font-size: 0.67rem; font-weight: 700; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--indigo); opacity: 0.7; margin-bottom: 0.75rem;
-}
-.posts-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
-.post-cell {
-  aspect-ratio: 1; border-radius: 9px; overflow: hidden;
-  position: relative; background: var(--border); border: 1px solid rgba(255,255,255,0.5);
-}
+.feed-section { padding: 0.9rem 1.1rem; }
+.feed-title { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.65rem; }
+.posts-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 5px; }
+.post-cell { aspect-ratio: 1; border-radius: var(--r-xs); overflow: hidden; position: relative; background: var(--line); border: 1px solid var(--line-soft); }
 .post-cell img, .post-cell video { width: 100%; height: 100%; object-fit: cover; }
-.post-del {
-  position: absolute; top: 4px; right: 4px; width: 20px; height: 20px;
-  border-radius: 5px; background: rgba(255,255,255,0.92); border: none;
-  color: var(--rose); font-size: 0.58rem; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: 0.15s;
-}
+.post-del { position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border-radius: 5px; background: rgba(255,255,255,0.9); border: none; color: var(--rose); font-size: 0.55rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.15s; }
 .post-del:hover { background: var(--rose); color: white; }
-.empty-feed { font-size: 0.78rem; color: var(--subtle); padding: 0.3rem 0; }
-.h-divider { border: none; border-top: 1px solid rgba(255,255,255,0.5); }
+.empty-feed { font-size: 0.76rem; color: var(--ink-4); padding: 0.2rem 0; }
+.h-divider { border: none; border-top: 1px solid var(--line-soft); }
 
-/* ── RESUME ITEM ── */
-.resume-item {
-  display: flex; align-items: center; gap: 0.65rem;
-  padding: 0.6rem 0.85rem; border-radius: var(--radius-sm);
-  background: rgba(79,70,229,0.05); border: 1px solid rgba(79,70,229,0.12);
-  margin-bottom: 0.5rem;
-}
-.resume-icon { font-size: 1.2rem; flex-shrink: 0; }
-.resume-name { font-size: 0.8rem; font-weight: 600; color: var(--slate); flex: 1; }
-.resume-del { background: none; border: none; color: var(--rose); cursor: pointer; font-size: 0.75rem; font-weight: 700; }
+.resume-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.8rem; border-radius: var(--r-sm); background: var(--accent-soft); border: 1px solid rgba(37,99,235,0.1); margin-bottom: 0.45rem; }
+.resume-icon { font-size: 1.1rem; flex-shrink: 0; }
+.resume-name { font-size: 0.78rem; font-weight: 600; color: var(--ink); flex: 1; }
+.resume-del { background: none; border: none; color: var(--rose); cursor: pointer; font-size: 0.72rem; font-weight: 700; font-family: inherit; }
 .resume-del:hover { text-decoration: underline; }
 
-/* ── CHAT CTA ── */
-.chat-cta {
-  margin: 1rem 1.4rem; width: calc(100% - 2.8rem); padding: 0.68rem;
-  border-radius: 99px; background: var(--grad);
-  color: white; font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 700;
-  border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-  box-shadow: 0 4px 16px rgba(79,70,229,0.3); transition: 0.2s;
-}
-.chat-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+.content { flex: 1; padding: 1.5rem 1.75rem; min-width: 0; overflow-y: auto; max-height: calc(100vh - 56px); }
+.content:has(.feed-scroll-host) { overflow-y: hidden; }
 
-/* ── MAIN CONTENT ── */
-.content { flex: 1; padding: 1.75rem 2rem; min-width: 0; overflow-y: auto; }
-.page-section { margin-bottom: 2.5rem; }
-.sec-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 1.1rem; }
-.sec-title { font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 800; color: var(--navy); }
-.sec-sub { font-size: 0.76rem; color: var(--muted); margin-left: 0.5rem; font-weight: 500; }
-.sec-link {
-  font-size: 0.78rem; font-weight: 700; color: var(--indigo);
-  background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: 0.2s;
-}
-.sec-link:hover { opacity: 0.65; }
+.feed-layout { display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem; align-items: start; }
+.feed-scroll-host { overflow: hidden; max-height: calc(100vh - 56px - 3rem - 48px); }
+.feed-left-col { overflow-y: auto; max-height: calc(100vh - 56px - 3rem - 48px); padding-right: 0.25rem; }
+.feed-left-col::-webkit-scrollbar { width: 3px; }
+.feed-left-col::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+.feed-right-col { overflow-y: auto; max-height: calc(100vh - 56px - 3rem - 48px); padding-left: 0.1rem; }
+.feed-right-col::-webkit-scrollbar { width: 3px; }
+.feed-right-col::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
 
-/* ── JOB CARDS ── */
-.jobs-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.1rem; }
-.job-card {
-  background: var(--surface-strong); border: 1px solid var(--border);
-  border-radius: var(--radius); overflow: hidden; cursor: pointer;
-  box-shadow: var(--shadow-sm); transition: 0.25s;
+.post-card {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 1rem 1.1rem;
+  margin-bottom: 0.85rem; transition: box-shadow 0.18s; position: relative;
 }
-.job-card:hover { box-shadow: var(--shadow-lg); border-color: rgba(79,70,229,0.25); transform: translateY(-3px); }
-.job-img { width: 100%; height: 120px; object-fit: cover; display: block; }
-.job-body { padding: 1rem; }
-.job-company { font-size: 0.68rem; font-weight: 700; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.28rem; }
-.job-title-text { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--navy); margin-bottom: 0.5rem; line-height: 1.3; }
-.job-tags { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
-.badge {
-  display: inline-flex; align-items: center;
-  padding: 0.16rem 0.55rem; border-radius: 99px;
-  font-size: 0.66rem; font-weight: 700; border: 1.5px solid;
+.post-card:hover { box-shadow: var(--shadow); }
+.post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.7rem; }
+.post-owner { display: flex; align-items: center; gap: 0.65rem; }
+.owner-avatar {
+  width: 36px; height: 36px; border-radius: 9px;
+  background: var(--accent-soft); color: var(--accent);
+  font-family: 'Fraunces', serif; font-weight: 800; font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  border: 1px solid rgba(37,99,235,0.12);
 }
-.job-salary { font-size: 0.76rem; color: var(--emerald); font-weight: 700; margin-bottom: 0.7rem; }
-.apply-btn {
-  width: 100%; padding: 0.5rem; border-radius: 99px;
-  border: none; background: var(--grad); color: white;
-  font-family: 'Syne', sans-serif; font-size: 0.78rem; font-weight: 700; cursor: pointer;
-  box-shadow: 0 4px 12px rgba(79,70,229,0.22); transition: 0.2s;
-}
-.apply-btn:hover { opacity: 0.88; transform: translateY(-1px); }
-
-/* ── INDUSTRY FEED ── */
-.feed-grid { display: flex; flex-direction: column; gap: 1.25rem; }
-.feed-card {
-  background: var(--surface-strong); border: 1px solid var(--border);
-  border-radius: var(--radius); overflow: hidden; cursor: pointer;
-  box-shadow: var(--shadow-sm); transition: 0.25s;
-}
-.feed-card:hover { box-shadow: var(--shadow); border-color: rgba(79,70,229,0.2); }
-.feed-img { width: 100%; height: 220px; object-fit: cover; display: block; }
-.feed-body { padding: 1.4rem; }
-.feed-owner-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-.feed-owner-left { display: flex; align-items: center; gap: 0.7rem; }
-.feed-logo {
-  width: 42px; height: 42px; border-radius: 11px;
-  background: rgba(79,70,229,0.1); color: var(--indigo);
-  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.85rem;
-  display: flex; align-items: center; justify-content: center;
-  border: 1px solid rgba(79,70,229,0.15);
-}
-.feed-owner-name { font-weight: 700; font-size: 0.95rem; }
-.feed-date { font-size: 0.72rem; color: var(--subtle); }
-.type-chip {
-  padding: 0.2rem 0.65rem; border-radius: 99px;
-  font-size: 0.68rem; font-weight: 700;
-}
+.owner-name { font-weight: 700; font-size: 0.86rem; color: var(--ink); line-height: 1.2; }
+.owner-meta { font-size: 0.7rem; color: var(--ink-4); }
+.type-chip { padding: 0.18rem 0.6rem; border-radius: 99px; font-size: 0.66rem; font-weight: 700; white-space: nowrap; }
 .chip-internship { background: #ede9fe; color: #5b21b6; }
 .chip-job { background: #e0f2fe; color: #0369a1; }
 .chip-update { background: #dcfce7; color: #166534; }
-
-/* ── APPLICATION STATUS ── */
-.applications-list { display: flex; flex-direction: column; gap: 1rem; }
-.app-card {
-  background: var(--surface-strong); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1.2rem;
-  box-shadow: var(--shadow-sm);
+.post-img { width: 100%; height: 165px; object-fit: cover; border-radius: 10px; margin-bottom: 0.7rem; display: block; }
+.post-title { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 700; color: var(--ink); margin-bottom: 0.3rem; line-height: 1.3; }
+.post-desc { font-size: 0.8rem; color: var(--ink-3); line-height: 1.58; margin-bottom: 0.65rem; }
+.skill-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 0.65rem; }
+.skill-tag { background: var(--bg); color: var(--ink-2); padding: 2px 8px; border-radius: 6px; font-size: 0.68rem; font-weight: 600; border: 1px solid var(--line); }
+.post-actions { display: flex; align-items: center; gap: 0.65rem; padding-top: 0.6rem; border-top: 1px solid var(--line-soft); }
+.act-btn { background: none; border: none; cursor: pointer; font-family: inherit; font-size: 0.76rem; font-weight: 600; color: var(--ink-3); display: flex; align-items: center; gap: 4px; padding: 3px 7px; border-radius: 6px; transition: 0.12s; }
+.act-btn:hover { background: var(--bg); color: var(--ink); }
+.act-btn.liked { color: var(--accent); }
+.apply-pill {
+  margin-left: auto; padding: 0.3rem 0.9rem; border-radius: 99px;
+  background: var(--accent); color: white; border: none; cursor: pointer;
+  font-family: inherit; font-size: 0.72rem; font-weight: 700;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.22); transition: 0.15s;
 }
-.app-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
-.app-role { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--navy); }
-.app-company { font-size: 0.78rem; color: var(--muted); font-weight: 600; margin-top: 3px; }
-.status-pill { padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.72rem; font-weight: 700; }
+.apply-pill:hover { opacity: 0.88; transform: translateY(-1px); }
+.applied-pill { margin-left: auto; padding: 0.3rem 0.9rem; border-radius: 99px; background: var(--green-soft); color: var(--green); font-size: 0.72rem; font-weight: 700; }
+
+.right-col { display: flex; flex-direction: column; gap: 1rem; position: sticky; top: 1.5rem; }
+.widget { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.widget-head { padding: 0.8rem 1rem; border-bottom: 1px solid var(--line-soft); display: flex; align-items: center; justify-content: space-between; }
+.widget-title { font-size: 0.78rem; font-weight: 700; color: var(--ink); }
+.widget-link { font-size: 0.7rem; font-weight: 600; color: var(--accent); background: none; border: none; cursor: pointer; font-family: inherit; transition: 0.12s; }
+.widget-link:hover { opacity: 0.65; }
+.company-row { padding: 0.65rem 1rem; border-bottom: 1px solid var(--line-soft); display: flex; align-items: center; gap: 0.65rem; cursor: pointer; transition: background 0.12s; }
+.company-row:last-child { border-bottom: none; }
+.company-row:hover { background: var(--bg); }
+.company-logo { width: 34px; height: 34px; border-radius: 8px; background: var(--accent); color: white; font-family: 'Fraunces', serif; font-weight: 800; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.company-name { font-weight: 600; font-size: 0.82rem; color: var(--ink); }
+.company-domain { font-size: 0.68rem; color: var(--ink-4); }
+.follow-btn { margin-left: auto; padding: 0.26rem 0.75rem; border-radius: 99px; border: 1.5px solid var(--accent); color: var(--accent); background: none; font-family: inherit; font-size: 0.68rem; font-weight: 700; cursor: pointer; transition: 0.15s; white-space: nowrap; }
+.follow-btn:hover { background: var(--accent); color: white; }
+.quick-stats { padding: 0.9rem 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+.stat-box { background: var(--bg); border-radius: var(--r-sm); padding: 0.7rem 0.75rem; }
+.stat-num { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 800; color: var(--ink); }
+.stat-label { font-size: 0.66rem; font-weight: 600; color: var(--ink-4); margin-top: 1px; }
+
+.page-section { margin-bottom: 2rem; }
+.sec-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 1rem; }
+.sec-title { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 800; color: var(--ink); }
+.sec-sub { font-size: 0.74rem; color: var(--ink-3); margin-left: 0.45rem; }
+.sec-link { font-size: 0.76rem; font-weight: 600; color: var(--accent); background: none; border: none; cursor: pointer; font-family: inherit; transition: 0.15s; }
+.sec-link:hover { opacity: 0.65; }
+
+.jobs-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+.job-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; cursor: pointer; box-shadow: var(--shadow-xs); transition: 0.22s; }
+.job-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); border-color: rgba(37,99,235,0.2); }
+.job-img { width: 100%; height: 110px; object-fit: cover; display: block; }
+.job-body { padding: 0.9rem; }
+.job-company { font-size: 0.65rem; font-weight: 700; color: var(--ink-4); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.25rem; }
+.job-title-text { font-family: 'Fraunces', serif; font-size: 0.92rem; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem; line-height: 1.3; }
+.job-tags { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.55rem; }
+.badge { display: inline-flex; align-items: center; padding: 0.14rem 0.5rem; border-radius: 99px; font-size: 0.63rem; font-weight: 700; border: 1.5px solid; }
+.job-salary { font-size: 0.74rem; color: var(--green); font-weight: 700; margin-bottom: 0.65rem; }
+.apply-btn { width: 100%; padding: 0.48rem; border-radius: 99px; border: none; background: var(--accent); color: white; font-family: 'Fraunces', serif; font-size: 0.76rem; font-weight: 700; cursor: pointer; box-shadow: 0 3px 10px rgba(37,99,235,0.22); transition: 0.18s; }
+.apply-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+.courses-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.9rem; }
+.course-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; cursor: pointer; box-shadow: var(--shadow-xs); transition: 0.22s; }
+.course-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+.course-img-wrap { position: relative; }
+.course-img { width: 100%; height: 100px; object-fit: cover; display: block; }
+.level-chip { position: absolute; top: 6px; right: 6px; padding: 0.13rem 0.46rem; border-radius: 99px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; border: 1.5px solid; }
+.course-body { padding: 0.8rem; }
+.course-prov { font-size: 0.64rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em; color: var(--accent); margin-bottom: 0.25rem; }
+.course-name { font-family: 'Fraunces', serif; font-size: 0.82rem; font-weight: 700; color: var(--ink); line-height: 1.3; margin-bottom: 0.45rem; }
+.course-meta { display: flex; gap: 0.5rem; font-size: 0.68rem; color: var(--ink-4); margin-bottom: 0.65rem; }
+.course-ft { display: flex; align-items: center; justify-content: space-between; }
+.rating { display: flex; align-items: center; gap: 0.2rem; font-size: 0.75rem; font-weight: 700; color: var(--amber); }
+.enroll-btn { padding: 0.32rem 0.78rem; border-radius: 99px; background: var(--accent); color: white; font-family: 'Fraunces', serif; font-size: 0.68rem; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 2px 6px rgba(37,99,235,0.22); transition: 0.15s; }
+.enroll-btn:hover { opacity: 0.85; transform: scale(1.04); }
+.no-courses { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 2.5rem; text-align: center; color: var(--ink-3); font-size: 0.85rem; }
+
+.applications-list { display: flex; flex-direction: column; gap: 0.9rem; }
+.app-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 1.1rem; box-shadow: var(--shadow-xs); }
+.app-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.65rem; }
+.app-role { font-family: 'Fraunces', serif; font-size: 0.98rem; font-weight: 700; color: var(--ink); }
+.app-company { font-size: 0.75rem; color: var(--ink-3); font-weight: 600; margin-top: 2px; }
+.status-pill { padding: 0.22rem 0.7rem; border-radius: 99px; font-size: 0.7rem; font-weight: 700; }
 .status-pending { background: #fef3c7; color: #b45309; }
 .status-shortlisted { background: #e0e7ff; color: #3730a3; }
 .status-selected { background: #dcfce7; color: #166534; }
 .status-rejected { background: #fee2e2; color: #b91c1c; }
-.app-meta { font-size: 0.78rem; color: var(--muted); line-height: 1.7; }
+.app-meta { font-size: 0.76rem; color: var(--ink-3); line-height: 1.7; }
 
-/* ── COURSES ── */
-.courses-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
-.course-card {
-  background: var(--surface-strong); border: 1px solid var(--border);
-  border-radius: var(--radius); overflow: hidden; cursor: pointer;
-  box-shadow: var(--shadow-sm); transition: 0.25s;
-}
-.course-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
-.course-img-wrap { position: relative; }
-.course-img { width: 100%; height: 105px; object-fit: cover; display: block; }
-.level-chip {
-  position: absolute; top: 7px; right: 7px;
-  padding: 0.16rem 0.5rem; border-radius: 99px;
-  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em;
-  text-transform: uppercase; border: 1.5px solid;
-}
-.course-body { padding: 0.9rem; }
-.course-prov {
-  font-size: 0.67rem; font-weight: 800; text-transform: uppercase;
-  letter-spacing: 0.07em; background: var(--grad);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.28rem;
-}
-.course-name { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--navy); line-height: 1.3; margin-bottom: 0.5rem; }
-.course-meta { display: flex; gap: 0.55rem; font-size: 0.7rem; color: var(--muted); margin-bottom: 0.75rem; }
-.course-ft { display: flex; align-items: center; justify-content: space-between; }
-.rating { display: flex; align-items: center; gap: 0.22rem; font-size: 0.78rem; font-weight: 700; color: var(--amber); }
-.enroll-btn {
-  padding: 0.35rem 0.82rem; border-radius: 99px; background: var(--grad);
-  color: white; font-family: 'Syne', sans-serif; font-size: 0.7rem; font-weight: 700;
-  border: none; cursor: pointer; box-shadow: 0 3px 8px rgba(79,70,229,0.25); transition: 0.2s;
-}
-.enroll-btn:hover { opacity: 0.85; transform: scale(1.05); }
-.no-courses {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 2.5rem; text-align: center;
-  color: var(--muted); font-size: 0.875rem;
-}
-
-/* ── DM PANEL ── */
-.dm-panel {
-  width: 340px; min-width: 340px;
-  background: var(--surface); backdrop-filter: blur(24px);
-  border-left: 1px solid var(--border);
-  height: calc(100vh - 62px); position: sticky; top: 62px;
-  display: flex; flex-direction: column; flex-shrink: 0;
-}
-.dm-head {
-  padding: 1.2rem 1.4rem;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-  background: var(--grad);
-}
-.dm-recipient { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: white; }
-.dm-status { font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.dm-panel { width: 300px; min-width: 300px; background: var(--surface); border-left: 1px solid var(--line); height: calc(100vh - 56px); position: sticky; top: 56px; display: flex; flex-direction: column; flex-shrink: 0; }
+.dm-head { padding: 1rem 1.1rem; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; background: var(--accent); }
+.dm-recipient { font-family: 'Fraunces', serif; font-size: 0.9rem; font-weight: 700; color: white; }
+.dm-status { font-size: 0.68rem; color: rgba(255,255,255,0.5); margin-top: 1px; }
 .online-dot { display: inline-block; width: 6px; height: 6px; background: #34d399; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
-.dm-body { flex: 1; padding: 1.1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.6rem; }
-.bubble {
-  max-width: 74%; padding: 0.62rem 0.9rem; border-radius: 14px;
-  font-size: 0.82rem; line-height: 1.45;
-}
-.bubble.sent { background: var(--grad); color: white; align-self: flex-end; border-bottom-right-radius: 3px; box-shadow: 0 4px 12px rgba(79,70,229,0.22); }
-.bubble.recv { background: rgba(255,255,255,0.8); color: var(--slate); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 3px; }
-.bubble-time { font-size: 0.64rem; opacity: 0.5; margin-top: 3px; }
-.dm-empty { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 0.45rem; color: var(--subtle); font-size: 0.82rem; }
-.dm-foot {
-  padding: 0.9rem; border-top: 1px solid var(--border);
-  display: flex; gap: 0.55rem; background: rgba(255,255,255,0.4);
-}
-.dm-input {
-  flex: 1; padding: 0.6rem 0.9rem; border-radius: 99px;
-  border: 1px solid var(--border-strong); background: var(--surface-strong);
-  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: var(--slate); outline: none; transition: 0.2s;
-}
-.dm-input:focus { border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
-.dm-input::placeholder { color: var(--subtle); }
-.send-btn {
-  width: 40px; height: 40px; border-radius: 50%; background: var(--grad);
-  border: none; color: white; font-size: 0.85rem; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 12px rgba(79,70,229,0.28); transition: 0.2s;
-}
-.send-btn:hover { opacity: 0.85; transform: scale(1.07); }
+.dm-body { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.55rem; }
+.bubble { max-width: 74%; padding: 0.58rem 0.85rem; border-radius: 14px; font-size: 0.8rem; line-height: 1.45; }
+.bubble.sent { background: var(--accent); color: white; align-self: flex-end; border-bottom-right-radius: 3px; box-shadow: 0 3px 8px rgba(37,99,235,0.2); }
+.bubble.recv { background: var(--bg); color: var(--ink); border: 1px solid var(--line); align-self: flex-start; border-bottom-left-radius: 3px; }
+.bubble-time { font-size: 0.62rem; opacity: 0.5; margin-top: 2px; }
+.dm-empty { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 0.4rem; color: var(--ink-4); font-size: 0.8rem; }
+.dm-foot { padding: 0.8rem; border-top: 1px solid var(--line); display: flex; gap: 0.5rem; background: var(--bg); }
+.dm-input { flex: 1; padding: 0.55rem 0.85rem; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); font-family: inherit; font-size: 0.8rem; color: var(--ink); outline: none; transition: 0.18s; }
+.dm-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.dm-input::placeholder { color: var(--ink-4); }
+.send-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--accent); border: none; color: white; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(37,99,235,0.25); transition: 0.18s; }
+.send-btn:hover { opacity: 0.85; transform: scale(1.06); }
 
-/* ── MODALS ── */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(15,23,42,0.65);
-  backdrop-filter: blur(10px); display: flex; align-items: center;
-  justify-content: center; z-index: 1000;
-}
-.modal-box {
-  background: white; border-radius: 22px; padding: 2.2rem;
-  width: 100%; max-width: 580px; max-height: 88vh; overflow-y: auto;
-  position: relative; box-shadow: 0 25px 60px rgba(15,23,42,0.4);
-}
-.modal-close {
-  position: absolute; top: 18px; right: 18px; width: 34px; height: 34px;
-  border-radius: 50%; background: #f1f5f9; border: none; cursor: pointer;
-  font-weight: 700; color: var(--muted); display: flex; align-items: center; justify-content: center;
-  transition: 0.15s;
-}
-.modal-close:hover { background: #e2e8f0; }
-.modal-title { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--navy); margin-bottom: 0.4rem; }
-.modal-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.8rem; }
-.field-label { font-size: 0.72rem; font-weight: 700; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.35rem; display: block; }
-.field-input {
-  width: 100%; padding: 0.75rem 1rem; border-radius: 11px;
-  border: 1.5px solid rgba(148,163,184,0.3); background: #f8fafc;
-  font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--slate); outline: none;
-  transition: 0.2s; margin-bottom: 1rem;
-}
-.field-input:focus { border-color: var(--indigo); background: white; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
-.field-input::placeholder { color: var(--subtle); }
-.field-textarea { min-height: 100px; resize: none; }
-.btn-primary {
-  width: 100%; padding: 0.9rem; border-radius: 12px; border: none;
-  background: var(--grad); color: white;
-  font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer;
-  box-shadow: 0 4px 16px rgba(79,70,229,0.3); transition: 0.2s;
-}
+.modal-overlay { position: fixed; inset: 0; background: rgba(17,19,24,0.55); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.modal-box { background: white; border-radius: 20px; padding: 2rem; width: 100%; max-width: 540px; max-height: 88vh; overflow-y: auto; position: relative; box-shadow: var(--shadow-lg); }
+.modal-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%; background: var(--bg); border: none; cursor: pointer; font-weight: 700; color: var(--ink-3); display: flex; align-items: center; justify-content: center; transition: 0.12s; }
+.modal-close:hover { background: var(--line); }
+.modal-title { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 800; color: var(--ink); margin-bottom: 0.35rem; }
+.modal-sub { font-size: 0.82rem; color: var(--ink-3); margin-bottom: 1.5rem; }
+.field-label { font-size: 0.7rem; font-weight: 700; color: var(--ink-3); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.3rem; display: block; }
+.field-input { width: 100%; padding: 0.7rem 0.95rem; border-radius: 10px; border: 1.5px solid var(--line); background: var(--bg); font-family: inherit; font-size: 0.85rem; color: var(--ink); outline: none; transition: 0.18s; margin-bottom: 0.9rem; }
+.field-input:focus { border-color: var(--accent); background: white; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.field-input::placeholder { color: var(--ink-4); }
+.field-textarea { min-height: 95px; resize: none; }
+.btn-primary { width: 100%; padding: 0.85rem; border-radius: 12px; border: none; background: var(--accent); color: white; font-family: 'Fraunces', serif; font-size: 0.92rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(37,99,235,0.28); transition: 0.18s; }
 .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-.btn-secondary {
-  width: 100%; padding: 0.75rem; border-radius: 12px; margin-top: 0.6rem;
-  border: 1.5px solid rgba(148,163,184,0.3); background: transparent;
-  color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer;
-  transition: 0.2s;
-}
-.btn-secondary:hover { background: #f1f5f9; }
+.btn-secondary { width: 100%; padding: 0.7rem; border-radius: 12px; margin-top: 0.5rem; border: 1.5px solid var(--line); background: transparent; color: var(--ink-3); font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.18s; }
+.btn-secondary:hover { background: var(--bg); }
 
-/* ── NOTIFICATIONS ── */
-.notif-toast {
-  background: var(--navy); color: white; padding: 1rem 1.8rem; border-radius: 16px;
-  box-shadow: 0 12px 32px rgba(15,23,42,0.3); font-size: 0.88rem; font-weight: 600;
-  display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,0.08);
-}
-.notif-dot2 { width: 8px; height: 8px; background: var(--indigo-light); border-radius: 50%; flex-shrink: 0; }
+.inbox-banner { background: var(--accent-soft); border: 1px solid rgba(37,99,235,0.15); border-radius: var(--r); padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 0.9rem; margin-bottom: 1.2rem; }
+.inbox-banner-icon { font-size: 1.3rem; flex-shrink: 0; }
+.inbox-banner-text { font-size: 0.8rem; color: var(--ink-2); font-weight: 500; line-height: 1.5; }
+.inbox-banner-text strong { color: var(--accent); }
 
-/* ── INBOX NOTICE ── */
-.inbox-banner {
-  background: linear-gradient(135deg, rgba(79,70,229,0.07), rgba(124,58,237,0.05));
-  border: 1px solid rgba(79,70,229,0.18); border-radius: var(--radius);
-  padding: 1rem 1.3rem; display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
-}
-.inbox-banner-icon { font-size: 1.5rem; flex-shrink: 0; }
-.inbox-banner-text { flex: 1; font-size: 0.83rem; color: var(--slate); font-weight: 500; line-height: 1.5; }
-.inbox-banner-text strong { color: var(--indigo); }
+.notif-toast { background: var(--ink); color: white; padding: 0.9rem 1.5rem; border-radius: 14px; box-shadow: 0 10px 28px rgba(0,0,0,0.22); font-size: 0.84rem; font-weight: 600; display: flex; align-items: center; gap: 9px; border: 1px solid rgba(255,255,255,0.07); }
+.notif-dot2 { width: 7px; height: 7px; background: var(--accent-mid); border-radius: 50%; flex-shrink: 0; }
 `;
 
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
+// NOTE FOR BACKEND INTEGRATION:
+// All data is currently from mock constants above.
+// When connecting backend, replace mock data with API calls using useEffect + fetch.
+// See StudentDashboard_WithBackend.jsx for the connected version.
 
 export default function StudentDashboard() {
   const [showProfile, setShowProfile] = useState(false);
@@ -612,9 +467,9 @@ export default function StudentDashboard() {
   const [activeChat, setActiveChat] = useState(null);
   const [activeUserProfile, setActiveUserProfile] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("feed"); // feed | jobs | courses | applications
+  const [activeTab, setActiveTab] = useState("feed");
   const [notifications, setNotifications] = useState([]);
-  const [applyModal, setApplyModal] = useState(null); // post being applied to
+  const [applyModal, setApplyModal] = useState(null);
   const [applyForm, setApplyForm] = useState({ coverLetter: "" });
   const [postDetailModal, setPostDetailModal] = useState(null);
   const [feedLikes, setFeedLikes] = useState({});
@@ -689,19 +544,20 @@ export default function StudentDashboard() {
   };
 
   const alreadyApplied = (postId) => myApplications.some(a => a.postId === postId);
-
   const unreadCount = inboxMessages.filter(m => !m.read).length;
 
-  const Av = ({ name, photo, size = 48, r = 13 }) => photo
+  const Av = ({ name, photo, size = 44, r = 11 }) => photo
     ? <img src={photo} style={{ width: size, height: size, borderRadius: r, objectFit: "cover", flexShrink: 0 }} alt="" />
     : <div className="panel-av" style={{ width: size, height: size, borderRadius: r, fontSize: size * 0.38, flexShrink: 0 }}>{name[0]}</div>;
+
+  const logoColors = { 1: "#2563eb", 2: "#7c3aed", 3: "#059669", 999: "#d97706" };
 
   const renderPanel = (user, editable = false) => (
     <div style={{ overflowY: "auto", height: "100%" }}>
       <div className="panel-top">
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
-            <Av name={user.name} photo={user.photo} size={48} r={13} />
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <Av name={user.name} photo={user.photo} size={44} r={11} />
             <div>
               <div className="panel-uname">{user.name}</div>
               <div className="panel-handle">@{user.username}</div>
@@ -742,7 +598,7 @@ export default function StudentDashboard() {
           </div>
           <div className="form-section">
             <div className="form-section-title">Academic Background</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
               {[
                 { name: "tenth", label: "10th School", placeholder: "School name" },
                 { name: "twelfth", label: "12th School", placeholder: "School name" },
@@ -760,11 +616,11 @@ export default function StudentDashboard() {
 
       <div className="knowmore-section">
         <button className="knowmore-btn" onClick={() => setShowDetails(!showDetails)}>
-          <span style={{ fontSize: "0.62rem" }}>{showDetails ? "▲" : "▼"}</span>
+          <span style={{ fontSize: "0.6rem" }}>{showDetails ? "▲" : "▼"}</span>
           {showDetails ? "Hide Details" : "View Candidate Details"}
         </button>
         {showDetails && (
-          <div className="details-box" style={{ marginTop: "0.75rem" }}>
+          <div className="details-box" style={{ marginTop: "0.65rem" }}>
             <div className="details-row">✉ {user.email}</div>
             <div className="details-row">☎ {user.phone}</div>
             <div className="details-row">📍 {user.address}</div>
@@ -790,11 +646,11 @@ export default function StudentDashboard() {
               }} />
             </label>
             {profile.resumes.length > 0 && (
-              <div style={{ marginTop: "0.6rem" }}>
+              <div style={{ marginTop: "0.55rem" }}>
                 {profile.resumes.map((r, i) => (
                   <div key={i} className="resume-item">
                     <span className="resume-icon">{r.type === "application/pdf" ? "📑" : "🖼️"}</span>
-                    <span className="resume-name">{r.name} <span style={{ color: "var(--subtle)", fontWeight: 400 }}>({r.size})</span></span>
+                    <span className="resume-name">{r.name} <span style={{ color: "var(--ink-4)", fontWeight: 400 }}>({r.size})</span></span>
                     <button className="resume-del" onClick={() => deleteResume(i)}>✕ Remove</button>
                   </div>
                 ))}
@@ -869,8 +725,8 @@ export default function StudentDashboard() {
       </div>
 
       {!editable && (
-        <div style={{ padding: "0.75rem 1.4rem", paddingTop: 0 }}>
-          <div style={{ background: "rgba(79,70,229,0.06)", border: "1px solid rgba(79,70,229,0.15)", borderRadius: 11, padding: "0.75rem 1rem", fontSize: "0.78rem", color: "var(--muted)", textAlign: "center" }}>
+        <div style={{ padding: "0.65rem 1.1rem", paddingTop: 0 }}>
+          <div style={{ background: "var(--accent-soft)", border: "1px solid rgba(37,99,235,0.14)", borderRadius: 10, padding: "0.65rem 0.9rem", fontSize: "0.75rem", color: "var(--ink-3)", textAlign: "center" }}>
             💬 Industry can message this student directly
           </div>
         </div>
@@ -878,18 +734,10 @@ export default function StudentDashboard() {
     </div>
   );
 
-  const chatList = [...mockIndustries.map(ind => ({
-    id: ind.id, name: ind.name, logo: ind.logo, type: "industry",
-    lastMsg: (profile.chats[ind.id] || []).slice(-1)[0]?.message || "No messages yet",
-    unread: unreadCount > 0 && inboxMessages.some(m => !m.read && m.fromId === ind.id),
-  }))];
-
   return (
     <>
       <style>{CSS}</style>
-      <div className="noise" />
 
-      {/* ── NAV ── */}
       <nav className="nav">
         <div>
           <div className="brand">Campus2Career</div>
@@ -905,14 +753,14 @@ export default function StudentDashboard() {
               {filteredUsers.length > 0
                 ? filteredUsers.map(u => (
                   <div key={u.id} className="search-row" onClick={() => { setActiveUserProfile(u.id); setSearchQuery(""); }}>
-                    <Av name={u.name} photo={u.photo} size={32} r={8} />
+                    <Av name={u.name} photo={u.photo} size={30} r={7} />
                     <div>
                       <div className="search-row-name">{u.name}</div>
                       <div className="search-row-meta">@{u.username} · {u.qualification}</div>
                     </div>
                   </div>
                 ))
-                : <div style={{ padding: "0.8rem 1rem", fontSize: "0.8rem", color: "var(--subtle)" }}>No students found.</div>
+                : <div style={{ padding: "0.75rem 1rem", fontSize: "0.78rem", color: "var(--ink-4)" }}>No students found.</div>
               }
             </div>
           )}
@@ -922,7 +770,7 @@ export default function StudentDashboard() {
           {["feed", "jobs", "courses", "applications"].map(tab => (
             <button key={tab} className={`nav-pill ${activeTab === tab ? "active" : ""}`}
               onClick={() => { setActiveTab(tab); setShowProfile(false); setActiveChat(null); }}>
-              {{ feed: "🏭 Industry Feed", jobs: "💼 Jobs", courses: "📚 Courses", applications: "📋 My Applications" }[tab]}
+              {{ feed: "🏭 Feed", jobs: "💼 Jobs", courses: "📚 Courses", applications: "📋 Applications" }[tab]}
             </button>
           ))}
           <div className="notif-btn" onClick={() => { setActiveTab("inbox"); setShowProfile(false); setActiveChat(null); }}>
@@ -930,91 +778,155 @@ export default function StudentDashboard() {
             {unreadCount > 0 && <div className="notif-dot" />}
           </div>
           <div className="nav-avatar" onClick={() => { setShowProfile(!showProfile); setActiveChat(null); }} title={profile.name}>
-            {profile.photo ? <img src={profile.photo} style={{ width: 36, height: 36, objectFit: "cover" }} alt="" /> : profile.name[0]}
+            {profile.photo ? <img src={profile.photo} style={{ width: 34, height: 34, objectFit: "cover" }} alt="" /> : profile.name[0]}
           </div>
         </div>
       </nav>
 
       <div className="layout">
-        {/* Left panel: other student profiles */}
         <AnimatePresence>
           {activeUserProfile && (
             <motion.div className="sidebar-panel"
-              initial={{ x: -340, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -340, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 280, damping: 28 }}>
+              initial={{ x: -300, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -300, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}>
               {renderPanel(mockUsers.find(u => u.id === activeUserProfile), false)}
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* ── MAIN ── */}
         <main className="content">
-
-          {/* INDUSTRY FEED */}
           {activeTab === "feed" && (
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-              <div className="page-section">
-                <div className="sec-head">
-                  <div><span className="sec-title">Industry Feed</span><span className="sec-sub">Vacancies & updates from companies</span></div>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="sec-head" style={{ marginBottom: "1.1rem" }}>
+                <div>
+                  <span className="sec-title">Industry Feed</span>
+                  <span className="sec-sub">Vacancies & updates from companies</span>
                 </div>
-                <div className="feed-grid">
-                  {sharedVacancyFeed.map(post => (
-                    <div key={post.id} className="feed-card">
-                      {post.image && <img src={post.image} className="feed-img" alt="" />}
-                      <div className="feed-body">
-                        <div className="feed-owner-row">
-                          <div className="feed-owner-left">
-                            <div className="feed-logo">{post.ownerLogo}</div>
-                            <div>
-                              <div className="feed-owner-name">{post.ownerName}</div>
-                              <div className="feed-date">{post.date}</div>
-                            </div>
+              </div>
+
+              <div className="feed-layout feed-scroll-host">
+                <div className="feed-left-col">
+                  {sharedVacancyFeed.map((post, idx) => (
+                    <motion.div key={post.id} className="post-card"
+                      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}>
+                      <div className="post-header">
+                        <div className="post-owner">
+                          <div className="owner-avatar" style={{ background: `${logoColors[post.ownerId] || "#2563eb"}18`, color: logoColors[post.ownerId] || "#2563eb", borderColor: `${logoColors[post.ownerId] || "#2563eb"}20` }}>
+                            {post.ownerLogo}
                           </div>
-                          <span className={`type-chip ${post.type === "Internship" ? "chip-internship" : post.type === "Job Vacancy" ? "chip-job" : "chip-update"}`}>
-                            {post.type}
-                          </span>
+                          <div>
+                            <div className="owner-name">{post.ownerName}</div>
+                            <div className="owner-meta">{post.date}</div>
+                          </div>
                         </div>
+                        <span className={`type-chip ${post.type === "Internship" ? "chip-internship" : post.type === "Job Vacancy" ? "chip-job" : "chip-update"}`}>
+                          {post.type}
+                        </span>
+                      </div>
 
-                        <h3 style={{ fontFamily: "Syne, sans-serif", fontSize: "1.2rem", fontWeight: 800, color: "var(--navy)", marginBottom: "0.5rem" }}>{post.title}</h3>
-                        <p style={{ fontSize: "0.88rem", color: "var(--muted)", lineHeight: 1.7, marginBottom: "1rem" }}>{post.desc.length > 120 ? post.desc.substring(0, 120) + "..." : post.desc}</p>
+                      {post.image && <img src={post.image} className="post-img" alt="" />}
+                      <div className="post-title">{post.title}</div>
+                      <div className="post-desc">{post.desc.length > 100 ? post.desc.substring(0, 100) + "..." : post.desc}</div>
 
-                        {post.skills && (
-                          <div style={{ marginBottom: "1rem" }}>
-                            {post.skills.split(", ").slice(0, 4).map(s => (
-                              <span key={s} style={{ display: "inline-block", background: "rgba(79,70,229,0.08)", color: "var(--indigo)", padding: "0.18rem 0.55rem", borderRadius: 99, fontSize: "0.7rem", fontWeight: 700, marginRight: "0.35rem", marginBottom: "0.35rem", border: "1px solid rgba(79,70,229,0.15)" }}>{s}</span>
-                            ))}
-                          </div>
+                      {post.skills && (
+                        <div className="skill-tags">
+                          {post.skills.split(", ").slice(0, 4).map(s => (
+                            <span key={s} className="skill-tag">{s}</span>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="post-actions">
+                        <button className={`act-btn ${feedLikes[post.id] ? "liked" : ""}`}
+                          onClick={() => setFeedLikes(prev => ({ ...prev, [post.id]: !prev[post.id] }))}>
+                          {feedLikes[post.id] ? "💙" : "🤍"} {post.likes + (feedLikes[post.id] ? 1 : 0)}
+                        </button>
+                        <button className="act-btn" onClick={() => setPostDetailModal(post)}>
+                          👁 View
+                        </button>
+                        {post.type !== "Update" && (
+                          alreadyApplied(post.id)
+                            ? <span className="applied-pill">✓ Applied</span>
+                            : <button className="apply-pill" onClick={() => { setApplyModal(post); setPostDetailModal(null); }}>
+                                Apply Now →
+                              </button>
                         )}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
 
-                        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-                          <button
-                            style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.82rem", fontWeight: 700, color: feedLikes[post.id] ? "var(--indigo)" : "var(--muted)", display: "flex", alignItems: "center", gap: "5px" }}
-                            onClick={() => setFeedLikes(prev => ({ ...prev, [post.id]: !prev[post.id] }))}>
-                            {feedLikes[post.id] ? "💙" : "🤍"} {post.likes + (feedLikes[post.id] ? 1 : 0)}
-                          </button>
-                          <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.82rem", fontWeight: 700, color: "var(--muted)" }} onClick={() => setPostDetailModal(post)}>
-                            👁️ View Details
-                          </button>
-                          {post.type !== "Update" && (
-                            alreadyApplied(post.id)
-                              ? <span style={{ marginLeft: "auto", background: "#dcfce7", color: "#166534", padding: "0.25rem 0.8rem", borderRadius: 99, fontSize: "0.72rem", fontWeight: 700 }}>✓ Applied</span>
-                              : <button style={{ marginLeft: "auto" }} className="apply-btn" style={{ width: "auto", marginLeft: "auto", padding: "0.38rem 1rem", fontSize: "0.78rem" }}
-                                  onClick={() => { setApplyModal(post); setPostDetailModal(null); }}>
-                                  Apply Now →
-                                </button>
-                          )}
-                        </div>
+                <div className="right-col feed-right-col">
+                  <div className="widget">
+                    <div className="widget-head">
+                      <span className="widget-title">My Activity</span>
+                    </div>
+                    <div className="quick-stats">
+                      <div className="stat-box">
+                        <div className="stat-num">{myApplications.length}</div>
+                        <div className="stat-label">Applications</div>
+                      </div>
+                      <div className="stat-box">
+                        <div className="stat-num">{myApplications.filter(a => a.status === "Shortlisted" || a.status === "Selected").length}</div>
+                        <div className="stat-label">Shortlisted</div>
+                      </div>
+                      <div className="stat-box">
+                        <div className="stat-num">{recommendedCourses.length}</div>
+                        <div className="stat-label">Courses</div>
+                      </div>
+                      <div className="stat-box">
+                        <div className="stat-num">{unreadCount}</div>
+                        <div className="stat-label">Unread msgs</div>
                       </div>
                     </div>
-                  ))}
+                  </div>
+
+                  <div className="widget">
+                    <div className="widget-head">
+                      <span className="widget-title">🏆 Top Companies</span>
+                      <button className="widget-link" onClick={() => setActiveTab("feed")}>Explore →</button>
+                    </div>
+                    {mockIndustries.map(ind => (
+                      <div key={ind.id} className="company-row">
+                        <div className="company-logo" style={{ background: logoColors[ind.id] || "#2563eb" }}>{ind.logo}</div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div className="company-name">{ind.name}</div>
+                          <div className="company-domain">{ind.domain} · {ind.location}</div>
+                        </div>
+                        <button className="follow-btn" onClick={() => pushNotify(`Following ${ind.name}!`)}>Follow</button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {recommendedCourses.length > 0 && (
+                    <div className="widget">
+                      <div className="widget-head">
+                        <span className="widget-title">📚 Courses for You</span>
+                        <button className="widget-link" onClick={() => setActiveTab("courses")}>See all →</button>
+                      </div>
+                      {recommendedCourses.slice(0, 3).map(c => {
+                        const lv = levelStyle[c.level] || levelStyle.Beginner;
+                        return (
+                          <div key={c.id} style={{ padding: "0.65rem 1rem", borderBottom: "1px solid var(--line-soft)", display: "flex", gap: "0.7rem", alignItems: "center", cursor: "pointer" }}
+                            className="company-row">
+                            <img src={c.image} style={{ width: 36, height: 36, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} alt="" />
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontWeight: 600, fontSize: "0.8rem", color: "var(--ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.title}</div>
+                              <div style={{ fontSize: "0.68rem", color: "var(--ink-4)", marginTop: 1 }}>{c.provider} · {c.duration}</div>
+                            </div>
+                            <span style={{ background: lv.bg, color: lv.color, padding: "2px 7px", borderRadius: 99, fontSize: "0.6rem", fontWeight: 700, border: `1px solid ${lv.border}`, flexShrink: 0 }}>{c.level}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
           )}
 
-          {/* JOBS */}
           {activeTab === "jobs" && (
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <div className="page-section">
                 <div className="sec-head">
                   <div><span className="sec-title">Recommended Jobs</span></div>
@@ -1022,14 +934,14 @@ export default function StudentDashboard() {
                 </div>
                 <div className="jobs-grid">
                   {jobData.map((job, i) => (
-                    <motion.div key={i} className="job-card" whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
+                    <motion.div key={i} className="job-card" whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 300, damping: 22 }}>
                       <img className="job-img" src={job.image} alt={job.title} />
                       <div className="job-body">
                         <div className="job-company">{job.company}</div>
                         <div className="job-title-text">{job.title}</div>
                         <div className="job-tags">
                           {typeStyle[job.type] && <span className="badge" style={{ background: typeStyle[job.type].bg, color: typeStyle[job.type].color, borderColor: typeStyle[job.type].bg }}>{job.type}</span>}
-                          <span className="badge" style={{ background: "rgba(255,255,255,0.6)", color: "var(--muted)", borderColor: "rgba(148,163,184,0.3)" }}>📍 {job.location}</span>
+                          <span className="badge" style={{ background: "var(--bg)", color: "var(--ink-3)", borderColor: "var(--line)" }}>📍 {job.location}</span>
                         </div>
                         <div className="job-salary">₹ {job.salary}</div>
                         <button className="apply-btn">Apply Now</button>
@@ -1041,9 +953,8 @@ export default function StudentDashboard() {
             </motion.div>
           )}
 
-          {/* COURSES */}
           {activeTab === "courses" && (
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <div className="page-section">
                 <div className="sec-head">
                   <div><span className="sec-title">Recommended Courses</span><span className="sec-sub">Tailored for {profile.qualification}</span></div>
@@ -1054,7 +965,7 @@ export default function StudentDashboard() {
                     {recommendedCourses.map(course => {
                       const lv = levelStyle[course.level] || levelStyle.Beginner;
                       return (
-                        <motion.div key={course.id} className="course-card" whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
+                        <motion.div key={course.id} className="course-card" whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 300, damping: 22 }}>
                           <div className="course-img-wrap">
                             <img className="course-img" src={course.image} alt={course.title} />
                             <span className="level-chip" style={{ background: lv.bg, color: lv.color, borderColor: lv.border }}>{course.level}</span>
@@ -1065,7 +976,7 @@ export default function StudentDashboard() {
                             <div className="course-meta"><span>⏱ {course.duration}</span><span>· 👥 {course.students}</span></div>
                             <div className="course-ft">
                               <div className="rating"><span>★</span>{course.rating}</div>
-                              <button className="enroll-btn">Enroll</button>
+                              <button className="enroll-btn" onClick={() => pushNotify(`Enrolled in ${course.title}!`)}>Enroll</button>
                             </div>
                           </div>
                         </motion.div>
@@ -1078,9 +989,8 @@ export default function StudentDashboard() {
             </motion.div>
           )}
 
-          {/* MY APPLICATIONS */}
           {activeTab === "applications" && (
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <div className="page-section">
                 <div className="sec-head">
                   <div><span className="sec-title">My Applications</span><span className="sec-sub">{myApplications.length} total</span></div>
@@ -1102,12 +1012,12 @@ export default function StudentDashboard() {
                           <strong>Cover Letter:</strong> {app.coverLetter}
                         </div>
                         {app.status === "Shortlisted" && (
-                          <div style={{ marginTop: "0.75rem", background: "rgba(79,70,229,0.06)", border: "1px solid rgba(79,70,229,0.15)", borderRadius: 10, padding: "0.7rem 0.9rem", fontSize: "0.8rem", color: "var(--indigo)", fontWeight: 600 }}>
+                          <div style={{ marginTop: "0.65rem", background: "var(--accent-soft)", border: "1px solid rgba(37,99,235,0.14)", borderRadius: 9, padding: "0.65rem 0.85rem", fontSize: "0.78rem", color: "var(--accent)", fontWeight: 600 }}>
                             🎉 You've been shortlisted! The company may reach out to you via messages.
                           </div>
                         )}
                         {app.status === "Selected" && (
-                          <div style={{ marginTop: "0.75rem", background: "rgba(16,185,129,0.07)", border: "1px solid rgba(16,185,129,0.2)", borderRadius: 10, padding: "0.7rem 0.9rem", fontSize: "0.8rem", color: "var(--emerald)", fontWeight: 600 }}>
+                          <div style={{ marginTop: "0.65rem", background: "var(--green-soft)", border: "1px solid rgba(5,150,105,0.18)", borderRadius: 9, padding: "0.65rem 0.85rem", fontSize: "0.78rem", color: "var(--green)", fontWeight: 600 }}>
                             ✅ Congratulations! You've been selected. Check messages for next steps.
                           </div>
                         )}
@@ -1119,9 +1029,8 @@ export default function StudentDashboard() {
             </motion.div>
           )}
 
-          {/* INBOX */}
           {activeTab === "inbox" && (
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <div className="page-section">
                 <div className="sec-head">
                   <div><span className="sec-title">Messages from Companies</span><span className="sec-sub">{unreadCount} unread</span></div>
@@ -1132,20 +1041,20 @@ export default function StudentDashboard() {
                     <strong>Note:</strong> Only companies can initiate conversations. You can reply to messages from companies who contact you directly.
                   </div>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.9rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                   {inboxMessages.map(msg => (
                     <div key={msg.id}
-                      style={{ background: msg.read ? "rgba(255,255,255,0.7)" : "rgba(79,70,229,0.05)", border: `1px solid ${msg.read ? "var(--border)" : "rgba(79,70,229,0.2)"}`, borderRadius: 16, padding: "1.1rem 1.3rem", cursor: "pointer", display: "flex", gap: "1rem", alignItems: "flex-start", transition: "0.2s" }}
+                      style={{ background: msg.read ? "var(--surface)" : "var(--accent-soft)", border: `1px solid ${msg.read ? "var(--line)" : "rgba(37,99,235,0.18)"}`, borderRadius: 14, padding: "1rem 1.2rem", cursor: "pointer", display: "flex", gap: "0.9rem", alignItems: "flex-start", transition: "0.15s" }}
                       onClick={() => { setActiveChat(msg.fromId); setInboxMessages(prev => prev.map(m => m.id === msg.id ? { ...m, read: true } : m)); }}>
-                      <div style={{ width: 42, height: 42, borderRadius: 11, background: "var(--grad)", color: "white", fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "0.9rem", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{msg.fromLogo}</div>
+                      <div style={{ width: 40, height: 40, borderRadius: 10, background: logoColors[msg.fromId] || "#2563eb", color: "white", fontFamily: "Fraunces, serif", fontWeight: 800, fontSize: "0.85rem", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{msg.fromLogo}</div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.28rem" }}>
-                          <span style={{ fontWeight: 700, fontSize: "0.88rem", color: "var(--navy)" }}>{msg.from}</span>
-                          <span style={{ fontSize: "0.72rem", color: "var(--subtle)" }}>{msg.time}</span>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.22rem" }}>
+                          <span style={{ fontWeight: 700, fontSize: "0.86rem", color: "var(--ink)" }}>{msg.from}</span>
+                          <span style={{ fontSize: "0.7rem", color: "var(--ink-4)" }}>{msg.time}</span>
                         </div>
-                        <p style={{ fontSize: "0.82rem", color: "var(--muted)", lineHeight: 1.5 }}>{msg.text}</p>
+                        <p style={{ fontSize: "0.8rem", color: "var(--ink-3)", lineHeight: 1.5 }}>{msg.text}</p>
                       </div>
-                      {!msg.read && <div style={{ width: 8, height: 8, background: "var(--indigo)", borderRadius: "50%", flexShrink: 0, marginTop: 4 }} />}
+                      {!msg.read && <div style={{ width: 7, height: 7, background: "var(--accent)", borderRadius: "50%", flexShrink: 0, marginTop: 5 }} />}
                     </div>
                   ))}
                 </div>
@@ -1154,33 +1063,31 @@ export default function StudentDashboard() {
           )}
         </main>
 
-        {/* Right panel: own profile */}
         <AnimatePresence>
           {showProfile && (
             <motion.div className="sidebar-panel right"
-              initial={{ x: 340, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 340, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 280, damping: 28 }}>
+              initial={{ x: 300, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 300, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}>
               {renderPanel(profile, true)}
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* DM Panel */}
         <AnimatePresence>
           {activeChat && (
             <motion.div className="dm-panel"
-              initial={{ x: 340, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 340, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 280, damping: 28 }}>
+              initial={{ x: 300, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 300, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}>
               <div className="dm-head">
                 <div>
                   <div className="dm-recipient">{mockIndustries.find(i => i.id === activeChat)?.name}</div>
-                  <div className="dm-status"><span className="online-dot" />Company • Active</div>
+                  <div className="dm-status"><span className="online-dot" />Company · Active</div>
                 </div>
                 <button className="close-x" onClick={() => setActiveChat(null)}>✕ Close</button>
               </div>
               <div className="dm-body">
                 {!(profile.chats[activeChat] || []).length
-                  ? <div className="dm-empty"><span style={{ fontSize: "1.8rem" }}>💬</span><span>No messages yet</span></div>
+                  ? <div className="dm-empty"><span style={{ fontSize: "1.7rem" }}>💬</span><span>No messages yet</span></div>
                   : (profile.chats[activeChat] || []).map((msg, i) => (
                     <div key={i} className={`bubble ${msg.sender === profile.name ? "sent" : "recv"}`}>
                       <div>{msg.message}</div>
@@ -1203,34 +1110,34 @@ export default function StudentDashboard() {
         </AnimatePresence>
       </div>
 
-      {/* ── POST DETAIL MODAL ── */}
+      {/* POST DETAIL MODAL */}
       <AnimatePresence>
         {postDetailModal && (
           <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={(e) => { if (e.target === e.currentTarget) setPostDetailModal(null); }}>
-            <motion.div className="modal-box" initial={{ scale: 0.94, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.94, opacity: 0 }}>
+            <motion.div className="modal-box" initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}>
               <button className="modal-close" onClick={() => setPostDetailModal(null)}>✕</button>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.85rem", marginBottom: "1.5rem" }}>
-                <div style={{ width: 50, height: 50, borderRadius: 13, background: "rgba(79,70,229,0.1)", color: "var(--indigo)", fontFamily: "Syne, sans-serif", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>{postDetailModal.ownerLogo}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", marginBottom: "1.3rem" }}>
+                <div style={{ width: 46, height: 46, borderRadius: 11, background: `${logoColors[postDetailModal.ownerId] || "#2563eb"}15`, color: logoColors[postDetailModal.ownerId] || "#2563eb", fontFamily: "Fraunces, serif", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem" }}>{postDetailModal.ownerLogo}</div>
                 <div>
-                  <div className="modal-title" style={{ fontSize: "1.4rem" }}>{postDetailModal.title}</div>
-                  <div style={{ color: "var(--indigo)", fontWeight: 700, fontSize: "0.85rem" }}>{postDetailModal.ownerName} · {postDetailModal.type}</div>
+                  <div className="modal-title" style={{ fontSize: "1.3rem" }}>{postDetailModal.title}</div>
+                  <div style={{ color: "var(--accent)", fontWeight: 700, fontSize: "0.82rem" }}>{postDetailModal.ownerName} · {postDetailModal.type}</div>
                 </div>
               </div>
-              {postDetailModal.image && <img src={postDetailModal.image} style={{ width: "100%", height: 180, objectFit: "cover", borderRadius: 14, marginBottom: "1.5rem" }} alt="" />}
-              <p style={{ lineHeight: 1.75, color: "var(--muted)", marginBottom: "1.5rem", fontSize: "0.88rem" }}>{postDetailModal.desc}</p>
+              {postDetailModal.image && <img src={postDetailModal.image} style={{ width: "100%", height: 170, objectFit: "cover", borderRadius: 12, marginBottom: "1.3rem" }} alt="" />}
+              <p style={{ lineHeight: 1.72, color: "var(--ink-3)", marginBottom: "1.3rem", fontSize: "0.86rem" }}>{postDetailModal.desc}</p>
               {postDetailModal.skills && (
-                <div style={{ background: "#f8fafc", border: "1px solid var(--border)", borderRadius: 14, padding: "1.1rem 1.3rem", marginBottom: "1.5rem" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                    <div><div style={{ fontSize: "0.68rem", fontWeight: 800, color: "var(--subtle)", marginBottom: 5, textTransform: "uppercase" }}>Required Skills</div><div style={{ fontWeight: 700, fontSize: "0.85rem" }}>{postDetailModal.skills}</div></div>
-                    <div><div style={{ fontSize: "0.68rem", fontWeight: 800, color: "var(--subtle)", marginBottom: 5, textTransform: "uppercase" }}>Duration / Type</div><div style={{ fontWeight: 700, fontSize: "0.85rem" }}>{postDetailModal.duration}</div></div>
-                    <div style={{ gridColumn: "span 2" }}><div style={{ fontSize: "0.68rem", fontWeight: 800, color: "var(--subtle)", marginBottom: 5, textTransform: "uppercase" }}>What We Offer</div><div style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--emerald)" }}>{postDetailModal.offerings}</div></div>
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 12, padding: "1rem 1.1rem", marginBottom: "1.3rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.9rem" }}>
+                    <div><div style={{ fontSize: "0.66rem", fontWeight: 800, color: "var(--ink-4)", marginBottom: 4, textTransform: "uppercase" }}>Required Skills</div><div style={{ fontWeight: 700, fontSize: "0.83rem" }}>{postDetailModal.skills}</div></div>
+                    <div><div style={{ fontSize: "0.66rem", fontWeight: 800, color: "var(--ink-4)", marginBottom: 4, textTransform: "uppercase" }}>Duration / Type</div><div style={{ fontWeight: 700, fontSize: "0.83rem" }}>{postDetailModal.duration}</div></div>
+                    <div style={{ gridColumn: "span 2" }}><div style={{ fontSize: "0.66rem", fontWeight: 800, color: "var(--ink-4)", marginBottom: 4, textTransform: "uppercase" }}>What We Offer</div><div style={{ fontWeight: 700, fontSize: "0.83rem", color: "var(--green)" }}>{postDetailModal.offerings}</div></div>
                   </div>
                 </div>
               )}
               {postDetailModal.type !== "Update" && (
                 alreadyApplied(postDetailModal.id)
-                  ? <div style={{ textAlign: "center", padding: "0.9rem", background: "#dcfce7", borderRadius: 12, color: "#166534", fontWeight: 700 }}>✓ You've already applied to this position</div>
+                  ? <div style={{ textAlign: "center", padding: "0.85rem", background: "var(--green-soft)", borderRadius: 11, color: "var(--green)", fontWeight: 700, fontSize: "0.85rem" }}>✓ You've already applied to this position</div>
                   : <button className="btn-primary" onClick={() => { setApplyModal(postDetailModal); setPostDetailModal(null); }}>Apply for this Role</button>
               )}
             </motion.div>
@@ -1238,52 +1145,55 @@ export default function StudentDashboard() {
         )}
       </AnimatePresence>
 
-      {/* ── APPLY MODAL ── */}
+      {/* APPLY MODAL */}
       <AnimatePresence>
         {applyModal && (
           <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={(e) => { if (e.target === e.currentTarget) setApplyModal(null); }}>
-            <motion.div className="modal-box" initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}>
+            <motion.div className="modal-box" initial={{ y: 35, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 35, opacity: 0 }}>
               <button className="modal-close" onClick={() => setApplyModal(null)}>✕</button>
               <div className="modal-title">Apply Now</div>
               <div className="modal-sub">Applying to <strong>{applyModal.ownerName}</strong> for <strong>{applyModal.title}</strong></div>
-              <form onSubmit={handleApplySubmit}>
+              <div>
                 <label className="field-label">Your Name</label>
-                <input className="field-input" value={profile.name} readOnly style={{ background: "#f8fafc", cursor: "not-allowed" }} />
+                <input className="field-input" value={profile.name} readOnly style={{ background: "var(--bg)", cursor: "not-allowed" }} />
                 <label className="field-label">Email</label>
-                <input className="field-input" value={profile.email} readOnly style={{ background: "#f8fafc", cursor: "not-allowed" }} />
+                <input className="field-input" value={profile.email} readOnly style={{ background: "var(--bg)", cursor: "not-allowed" }} />
                 <label className="field-label">Resume to Attach</label>
                 {profile.resumes.length > 0
-                  ? <div style={{ marginBottom: "1rem" }}>
+                  ? <div style={{ marginBottom: "0.9rem" }}>
                     {profile.resumes.map((r, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "rgba(79,70,229,0.05)", border: "1px solid rgba(79,70,229,0.15)", borderRadius: 10, padding: "0.5rem 0.8rem", marginBottom: "0.4rem" }}>
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "var(--accent-soft)", border: "1px solid rgba(37,99,235,0.14)", borderRadius: 9, padding: "0.48rem 0.75rem", marginBottom: "0.35rem" }}>
                         <span>{r.type === "application/pdf" ? "📑" : "🖼️"}</span>
-                        <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--slate)", flex: 1 }}>{r.name}</span>
-                        <span style={{ fontSize: "0.7rem", background: "#dcfce7", color: "#166534", padding: "0.12rem 0.5rem", borderRadius: 99, fontWeight: 700 }}>Attached</span>
+                        <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--ink)", flex: 1 }}>{r.name}</span>
+                        <span style={{ fontSize: "0.68rem", background: "var(--green-soft)", color: "var(--green)", padding: "0.1rem 0.45rem", borderRadius: 99, fontWeight: 700 }}>Attached</span>
                       </div>
                     ))}
                   </div>
-                  : <div style={{ marginBottom: "1rem", padding: "0.7rem", background: "#fff8e6", border: "1px solid #ffd97a", borderRadius: 10, fontSize: "0.8rem", color: "#9a6400", fontWeight: 600 }}>
+                  : <div style={{ marginBottom: "0.9rem", padding: "0.65rem", background: "var(--amber-soft)", border: "1px solid #fcd34d", borderRadius: 9, fontSize: "0.78rem", color: "var(--amber)", fontWeight: 600 }}>
                     ⚠️ No resume on file. Open your profile to upload one.
                   </div>
                 }
                 <label className="field-label">Cover Letter</label>
-                <textarea required className={`field-input field-textarea`} placeholder="Explain why you're a great fit for this role..."
+                <textarea className="field-input field-textarea" placeholder="Explain why you're a great fit for this role..."
                   value={applyForm.coverLetter} onChange={e => setApplyForm({ ...applyForm, coverLetter: e.target.value })} />
-                <button type="submit" className="btn-primary">Submit Application</button>
+                <button type="button" className="btn-primary" onClick={() => {
+                  if (!applyForm.coverLetter.trim()) { pushNotify("Please write a cover letter before submitting."); return; }
+                  handleApplySubmit({ preventDefault: () => {} });
+                }}>Submit Application</button>
                 <button type="button" className="btn-secondary" onClick={() => setApplyModal(null)}>Cancel</button>
-              </form>
+              </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ── NOTIFICATIONS ── */}
-      <div style={{ position: "fixed", bottom: "2rem", right: "2rem", zIndex: 2000, display: "flex", flexDirection: "column", gap: "12px" }}>
+      {/* NOTIFICATIONS */}
+      <div style={{ position: "fixed", bottom: "2rem", right: "2rem", zIndex: 2000, display: "flex", flexDirection: "column", gap: "10px" }}>
         <AnimatePresence>
           {notifications.map(n => (
             <motion.div key={n.id} className="notif-toast"
-              initial={{ opacity: 0, x: 50, scale: 0.92 }} animate={{ opacity: 1, x: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}>
+              initial={{ opacity: 0, x: 45, scale: 0.93 }} animate={{ opacity: 1, x: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}>
               <div className="notif-dot2" />{n.msg}
             </motion.div>
           ))}
